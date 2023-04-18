@@ -1,0 +1,57 @@
+name: Build Chrome
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y \
+        build-essential \
+        curl \
+        git \
+        libasound2-dev \
+        libatk-bridge2.0-dev \
+        libatk1.0-dev \
+        libatspi2.0-dev \
+        libcups2-dev \
+        libdrm-dev \
+        libexif-dev \
+        libgbm-dev \
+        libgdk-pixbuf2.0-dev \
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        libgtk-3-dev \
+        libicu-dev \
+        libjpeg-dev \
+        libnss3-dev \
+        libopus-dev \
+        libpci-dev \
+        libpng-dev \
+        libsecret-1-dev \
+        libspeechd-dev \
+        libsrtp2-dev \
+        libvpx-dev \
+        libwebp-dev \
+        libxslt1-dev \
+        libxtst-dev \
+        python3 \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel \
+        wget \
+        xauth \
+        xvfb \
+        zip
+    - name: Clone Chromium repository
+      run: git clone https://chromium.googlesource.com/chromium/src.git
+    - name: Install depot_tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: Add depot_tools to PATH
+      run: echo "export PATH=\$PATH:$(pwd)/depot_tools" >> $GITHUB_ENV
+    - name: Build Chrome
+      run: xvfb-run -a python3 src/build/gyp_chromium && xvfb-run -a ninja -C out/Release chrome chrome_sandbox
